@@ -43,7 +43,7 @@ using (var serviceScope = app.Services.CreateScope()) //створюємо об'єкт для роб
     if (!context.Categories.Any()) //перевірка чи є категорії в БД
     {
         var imageName = imageWorker.Save("https://rivnepost.rv.ua/img/650/korisnoi-kovbasi-ne-buvae-hastroenterolohi-nazvali_20240612_4163.jpg");
-        var kovbasa = new CategoryEntity
+        var kovbasa = new CategoryEntity //створюємо об'єкт категорії
         {
             Name = "Ковбаси",
             Image = imageName,
@@ -52,7 +52,7 @@ using (var serviceScope = app.Services.CreateScope()) //створюємо об'єкт для роб
         };
 
         imageName = imageWorker.Save("https://www.vsesmak.com.ua/sites/default/files/styles/large/public/field/image/syrnaya_gora_5330_1900_21.jpg?itok=RPUrRskl");
-        var cheese = new CategoryEntity
+        var cheese = new CategoryEntity //створюємо об'єкт категорії
         {
             Name = "Сири",
             Image = imageName,
@@ -70,8 +70,8 @@ using (var serviceScope = app.Services.CreateScope()) //створюємо об'єкт для роб
             "які майже не сприяють набору зайвої ваги – наприклад, цільнозерновий хліб."
         };
 
-        context.Categories.Add(kovbasa);
-        context.Categories.Add(cheese);
+        context.Categories.Add(kovbasa); //додаємо категорії в БД
+        context.Categories.Add(cheese); 
         context.Categories.Add(bread);
         context.SaveChanges();
     }
