@@ -2,19 +2,20 @@
 
 <h1 class="text-center">Оберіть потрібну категорію</h1> 
 
-<div class="container"> // контейнер для категорій
-    <a asp-action="Create" class="btn btn-success">Додати</a> // кнопка для додавання категорії
-    <div class="row"> // рядок для категорій
+<div class="container"> 
+    <a asp-action="Create" class="btn btn-success">Додати</a> 
+    <div class="row"> 
         @foreach (var item in Model)
         {
-            <div class="col-md-3" id="@("ProductItem"+@item.Id)"> // блок для категорії
-                <div class="card" style="width: 100%;"> // карточка категорії
-                    <img src="/uploading/300_@item.Image" class="card-img-top"> // фото категорії
-                    <div class="card-body"> // тіло карточки
-                        <h5 class="card-title">@item.Name</h5> // назва  категорії
-                        <p class="card-text">@item.Description</p> // опис категорії
+            <div class="col-md-3" id="@("ProductItem"+@item.Id)"> 
+                <div class="card" style="width: 100%;"> 
+                    <img src="/uploading/300_@item.Image" class="card-img-top"> 
+                    <div class="card-body"> 
+                        <h5 class="card-title">@item.Name</h5> 
+                        <p class="card-text">@item.Description</p>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
                         <a href="#" class="btn btn-danger" data-name="@item.Name"  
-                            data-delete="@item.Id">Delete</a> // кнопка для видалення категорії
+                            data-delete="@item.Id">Delete</a> 
                     </div>
                 </div>
             </div>
@@ -22,19 +23,19 @@
     </div>
 </div>
 
-<div class="modal" id="modalDelete" tabindex="-1"> // модальне вікно для підтвердження видалення
-    <div class="modal-dialog"> // діалогове вікно
-        <div class="modal-content"> // вміст вікна
-            <div class="modal-header"> // заголовок вікна
-                <h5 class="modal-title">Ви дійсно бажаєте видалити</h5> // заголовок вікна
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> // кнопка для закриття вікна
+<div class="modal" id="modalDelete" tabindex="-1"> 
+    <div class="modal-dialog"> 
+        <div class="modal-content"> 
+            <div class="modal-header"> 
+                <h5 class="modal-title">Ви дійсно бажаєте видалити</h5> 
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
             </div>
-            <div class="modal-body"> // тіло вікна
-                <p>Буде проведено видалення <span id="categoryName"></span>?</p > // підтвердження видалення
+            <div class="modal-body">
+                <p>Буде проведено видалення <span id="categoryName"></span>?</p > 
             </div>
-            <div class="modal-footer"> // футер вікна
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button> // кнопка для скасування
-                <button type="button" class="btn btn-primary" id="deleteYes">Підтвердити</button> // кнопка для підтвердження
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button> 
+                <button type="button" class="btn btn-primary" id="deleteYes">Підтвердити</button> 
             </div>
         </div>
     </div>
@@ -42,7 +43,7 @@
 
 
 @section Scripts {
-    <script src="/lib/axios/axios.min.js"></script> // підключення бібліотеки axios
+    <script src="/lib/axios/axios.min.js"></script> 
     <script>
         document.addEventListener("DOMContentLoaded", () => { // виконання скрипту після завантаження сторінки
             var modalDelete = new bootstrap.Modal(document.getElementById('modalDelete')); // створення модального вікна

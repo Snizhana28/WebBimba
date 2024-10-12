@@ -89,5 +89,67 @@ namespace WebBimba.Controllers
 
             return Json(new { text="Ми його видалили" }); // Вертаю об'єкт у відповідь
         }
+        [HttpGet]
+        public IActionResult Edit(int id) // Метод для редагування категорії
+        {
+            var category = _dbContext.Categories.FirstOrDefault(c => c.Id == id); // Знаходимо категорію по id
+            if (category == null) // Якщо категорію не знайдено
+            {
+                return NotFound(); // Повертаємо помилку 404
+            }
+             
+            var model = new CategoryEditViewModel // Створюємо модель для відображення
+            {
+                Id = category.Id,
+                Name = category.Name,
+                Description = category.Description,
+                ExistingImage = category.Image
+            };
+            return View(model); // Переходимо на сторінку редагування
+        }
+        [HttpPost]
+        // Метод для редагування категорії
+        public IActionResult Edit(CategoryEditViewModel model) // Метод для редагування категорії
+        {
+            var entity = _dbContext.Categories.FirstOrDefault(c => c.Id == model.Id); // Знаходимо категорію по id
+            if (entity == null) // Якщо категорію не знайдено
+            {
+                return NotFound(); // Повертаємо помилку 404
+            }
+
+            entity.Name = model.Name; // Змінюємо назву категорії
+            entity.Description = model.Description; // Змінюємо опис категорії
+
+            if (model.Photo != null) // Якщо було вибрано нове зображення
+            {
+                var dirName = "uploading"; // Папка для збереження файлів
+                var dirSave = Path.Combine(_environment.WebRootPath, dirName); // Повний шлях до папки
+                if (!Directory.Exists(dirSave)) // Перевірка чи існує папка
+                {
+                    Directory.CreateDirectory(dirSave); 
+                }
+
+                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Photo.FileName); // Генеруємо унікальне ім'я файлу
+                var saveFile = Path.Combine(dirSave, fileName); // Повний шлях до файлу
+                using (var stream = new FileStream(saveFile, FileMode.Create)) // Зберігаємо файл
+                {
+                    model.Photo.CopyTo(stream); 
+                }
+
+                // Видалення старого зображення
+                if (!string.IsNullOrEmpty(entity.Image)) // Якщо у категорії є зображення
+                {
+                    var oldImagePath = Path.Combine(_environment.WebRootPath, "uploading", entity.Image); // Повний шлях до старого зображення
+                    if (System.IO.File.Exists(oldImagePath)) // Перевірка чи існує файл
+                    {
+                        System.IO.File.Delete(oldImagePath); // Видаляємо файл
+                    }
+                }
+                entity.Image = fileName; // Змінюємо шлях до зображення
+            }
+
+            _dbContext.SaveChanges(); // Зберігаємо зміни в базі даних
+            return RedirectToAction("Index"); // Переходимо на головну сторінку
+        }
     }
 }
