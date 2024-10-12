@@ -118,22 +118,26 @@ namespace WebBimba.Controllers
             entity.Name = model.Name;
             entity.Description = model.Description;
 
-            // Якщо було вибрано нове зображення
+            // Якщо нове фото вибрано
             if (model.Photo != null)
             {
-                // Збереження декількох розмірів нового зображення
-                entity.Image = _imageWorker.Save(model.Photo);
+                // Збереження нового зображення
+                var newImage = _imageWorker.Save(model.Photo);
 
-                // Видалення старого зображення
+                // Видалення старих фото
                 if (!string.IsNullOrEmpty(entity.Image))
                 {
-                    _imageWorker.Delete(entity.Image); // Видаляємо старе зображення
+                    _imageWorker.Delete(entity.Image); // Видаляємо старі зображення
                 }
+
+                entity.Image = newImage; // Призначаємо нове зображення
             }
 
             // Зберігаємо зміни в базі даних
             _dbContext.SaveChanges();
             return RedirectToAction("Index"); // Переходимо на головну сторінку
         }
+
+
     }
 }
