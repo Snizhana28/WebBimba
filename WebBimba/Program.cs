@@ -76,7 +76,8 @@ using (var serviceScope = app.Services.CreateScope()) //створюємо об'єкт для роб
         context.SaveChanges();
     }
 
-    if (!context.Products.Any()) //перевірка чи є продукти в БД
+    //перевірка чи є продукти в БД
+    if (!context.Products.Any()) 
     {
         var categories = context.Categories.ToList(); //отримуємо всі категорії з БД
 
