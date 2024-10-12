@@ -1,21 +1,21 @@
 ﻿@model List<WebBimba.Data.Entities.CategoryEntity>
 
-<h1 class="text-center">Оберіть потрібну категорію</h1> 
+<h1 class="text-center">Оберіть потрібну категорію</h1>
 
-<div class="container"> 
-    <a asp-action="Create" class="btn btn-success">Додати</a> 
-    <div class="row"> 
+<div class="container">
+    <a asp-action="Create" class="btn btn-success mb-3">Додати</a>
+    <div class="row g-3">
         @foreach (var item in Model)
         {
-            <div class="col-md-3" id="@("ProductItem"+@item.Id)"> 
-                <div class="card" style="width: 100%;"> 
-                    <img src="/uploading/300_@item.Image" class="card-img-top"> 
-                    <div class="card-body"> 
-                        <h5 class="card-title">@item.Name</h5> 
+            <div class="col-6 col-md-4 col-lg-3" id="@("ProductItem"+@item.Id)">
+                <div class="card h-100">
+                    <img src="/uploading/300_@item.Image" class="card-img-top" alt="@item.Name">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
                         <p class="card-text">@item.Description</p>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
-                        <a href="#" class="btn btn-danger" data-name="@item.Name"  
-                            data-delete="@item.Id">Delete</a> 
+                        <a href="#" class="btn btn-danger" data-name="@item.Name"
+                           data-delete="@item.Id">Delete</a>
                     </div>
                 </div>
             </div>
@@ -23,33 +23,32 @@
     </div>
 </div>
 
-<div class="modal" id="modalDelete" tabindex="-1"> 
-    <div class="modal-dialog"> 
-        <div class="modal-content"> 
-            <div class="modal-header"> 
-                <h5 class="modal-title">Ви дійсно бажаєте видалити</h5> 
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> 
+<div class="modal" id="modalDelete" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Ви дійсно бажаєте видалити</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Буде проведено видалення <span id="categoryName"></span>?</p > 
+                <p>Буде проведено видалення <span id="categoryName"></span>?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button> 
-                <button type="button" class="btn btn-primary" id="deleteYes">Підтвердити</button> 
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <button type="button" class="btn btn-primary" id="deleteYes">Підтвердити</button>
             </div>
         </div>
     </div>
 </div>
 
-
 @section Scripts {
-    <script src="/lib/axios/axios.min.js"></script> 
+    <script src="/lib/axios/axios.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", () => { // виконання скрипту після завантаження сторінки
-            var modalDelete = new bootstrap.Modal(document.getElementById('modalDelete')); // створення модального вікна
+        document.addEventListener("DOMContentLoaded", () => { // Виконання скрипту після завантаження сторінки
+            var modalDelete = new bootstrap.Modal(document.getElementById('modalDelete')); // Створення модального вікна
 
-            var buttonsDelete = document.querySelectorAll('[data-delete]'); 
-            var categoryName = document.getElementById("categoryName"); 
+            var buttonsDelete = document.querySelectorAll('[data-delete]');
+            var categoryName = document.getElementById("categoryName");
             var idDelete = 0;
             buttonsDelete.forEach(btn => {
                 btn.addEventListener("click", function (event) {
@@ -62,13 +61,13 @@
                 });
             });
 
-            document.getElementById("deleteYes").addEventListener("click", () => { // видалення категорії
+            document.getElementById("deleteYes").addEventListener("click", () => { // Видалення категорії
                 console.log("Delete by id", idDelete);
-                //Виконуємо асинхроний запит на сервер через JavaScript
+                // Виконуємо асинхроний запит на сервер через JavaScript
                 axios.post("/Main/Delete/" + idDelete)
-                    .then(res => { //Очікуємо результат від сервера
+                    .then(res => { // Очікуємо результат від сервера
                         modalDelete.hide();
-                        document.getElementById("ProductItem"+idDelete).remove();
+                        document.getElementById("ProductItem" + idDelete).remove();
                     });
             });
         });
