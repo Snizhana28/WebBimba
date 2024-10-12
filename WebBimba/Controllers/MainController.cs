@@ -45,28 +45,25 @@ namespace WebBimba.Controllers
         [HttpPost] //це означає, що ми отримуємо дані із форми від клієнта
         public IActionResult Create(CategoryCreateViewModel model)
         {
-            var entity = new CategoryEntity(); //створюємо новий об'єкт категорії
-            //Збережння в Базу даних інформації
-            var dirName = "uploading"; //створюємо папку для збереження файлів
-            var dirSave = Path.Combine(_environment.WebRootPath, dirName); //повний шлях до папки
-            // перевірка чи існує папка
-            if (!Directory.Exists(dirSave))
-            {
-                Directory.CreateDirectory(dirSave);
-            }
-            //перевірка чи файл був вибраний
+            var entity = new CategoryEntity(); // створюємо новий об'єкт категорії
+
+            // Перевірка чи файл був вибраний
             if (model.Photo != null)
             {
-                entity.Image = _imageWorker.Save(model.Photo); //зберігаємо файл
+                entity.Image = _imageWorker.Save(model.Photo); // зберігаємо декілька розмірів фото
             }
-            //заповнюємо об'єкт категорії даними з форми
-            entity.Name = model.Name; 
+
+            // Заповнюємо об'єкт категорії даними з форми
+            entity.Name = model.Name;
             entity.Description = model.Description;
-            //додаємо об'єкт в контекст бази даних
+
+            // Додаємо об'єкт в контекст бази даних
             _dbContext.Categories.Add(entity);
-            //зберігаємо зміни в базі даних
+
+            // Зберігаємо зміни в базі даних
             _dbContext.SaveChanges();
-            //Переходимо до списку усіх категорій, тобото визиваємо метод Index нашого контролера
+
+            // Переходимо до списку всіх категорій
             return Redirect("/");
         }
 
@@ -117,38 +114,25 @@ namespace WebBimba.Controllers
                 return NotFound(); // Повертаємо помилку 404
             }
 
-            entity.Name = model.Name; // Змінюємо назву категорії
-            entity.Description = model.Description; // Змінюємо опис категорії
+            // Оновлюємо дані категорії
+            entity.Name = model.Name;
+            entity.Description = model.Description;
 
-            if (model.Photo != null) // Якщо було вибрано нове зображення
+            // Якщо було вибрано нове зображення
+            if (model.Photo != null)
             {
-                var dirName = "uploading"; // Папка для збереження файлів
-                var dirSave = Path.Combine(_environment.WebRootPath, dirName); // Повний шлях до папки
-                if (!Directory.Exists(dirSave)) // Перевірка чи існує папка
-                {
-                    Directory.CreateDirectory(dirSave); 
-                }
-
-                string fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.Photo.FileName); // Генеруємо унікальне ім'я файлу
-                var saveFile = Path.Combine(dirSave, fileName); // Повний шлях до файлу
-                using (var stream = new FileStream(saveFile, FileMode.Create)) // Зберігаємо файл
-                {
-                    model.Photo.CopyTo(stream); 
-                }
+                // Збереження декількох розмірів нового зображення
+                entity.Image = _imageWorker.Save(model.Photo);
 
                 // Видалення старого зображення
-                if (!string.IsNullOrEmpty(entity.Image)) // Якщо у категорії є зображення
+                if (!string.IsNullOrEmpty(entity.Image))
                 {
-                    var oldImagePath = Path.Combine(_environment.WebRootPath, "uploading", entity.Image); // Повний шлях до старого зображення
-                    if (System.IO.File.Exists(oldImagePath)) // Перевірка чи існує файл
-                    {
-                        System.IO.File.Delete(oldImagePath); // Видаляємо файл
-                    }
+                    _imageWorker.Delete(entity.Image); // Видаляємо старе зображення
                 }
-                entity.Image = fileName; // Змінюємо шлях до зображення
             }
 
-            _dbContext.SaveChanges(); // Зберігаємо зміни в базі даних
+            // Зберігаємо зміни в базі даних
+            _dbContext.SaveChanges();
             return RedirectToAction("Index"); // Переходимо на головну сторінку
         }
     }
