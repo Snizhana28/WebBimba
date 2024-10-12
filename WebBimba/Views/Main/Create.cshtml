@@ -1,0 +1,25 @@
+﻿@model WebBimba.Models.Category.CategoryCreateViewModel
+
+<h1 class="text-center">Додати нову категорію</h1>
+
+<div class="container"> //контейнер для форми
+    <div class="row"> //рядок для форми
+        <form method="post" class="col-md-6 offset-md-3" enctype="multipart/form-data"> //форма для додавання категорії з методом post
+            <div class="mb-3"> //блок для назви категорії
+                <label asp-for="Name" class="form-label"></label> //лейбл для назви категорії
+                <input type="text" class="form-control" asp-for="Name"> //поле для введення назви категорії
+            </div>
+
+            <div class="mb-3"> //блок для фото категорії
+                <label asp-for="Photo" class="form-label"></label> //лейбл для фото категорії
+                <input class="form-control" type="file" asp-for="Photo"> //поле для вибору фото категорії
+            </div>
+
+            <div class="mb-3"> //блок для опису категорії
+                <label asp-for="Description" class="form-label"></label> //лейбл для опису категорії
+                <textarea class="form-control"  rows="3" asp-for="Description"></textarea> //поле для введення опису категорії
+            </div>
+            <button type="submit" class="btn btn-primary">Додати</button> //кнопка для додавання категорії
+        </form>
+    </div>
+</div>
