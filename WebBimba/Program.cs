@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WebBimba.Data;
 using WebBimba.Data.Entities;
 using WebBimba.Interfaces;
+using WebBimba.Mapper;
 using WebBimba.Services;
 
 var builder = WebApplication.CreateBuilder(args); //створюємо об'єкт для роботи з веб додатком
@@ -12,7 +13,7 @@ builder.Services.AddDbContext<AppBimbaDbContext>(opt =>
     opt.UseNpgsql(builder.Configuration.GetConnectionString("MyConnectionDB"))); //додаємо сервіс для роботи з БД
 
 builder.Services.AddScoped<IImageWorker, ImageWorker>(); //додаємо сервіс для роботи з зображеннями
-
+builder.Services.AddAutoMapper(typeof(AppMapperProfile)); //додаємо сервіс для роботи з маппінгом
 builder.Services.AddControllersWithViews(); //додаємо сервіс для роботи з контролерами
 
 var app = builder.Build(); //створюємо об'єкт для роботи з веб додатком

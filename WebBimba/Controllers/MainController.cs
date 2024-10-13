@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.AspNetCore.Mvc;
 using WebBimba.Data;
 using WebBimba.Data.Entities;
 using WebBimba.Interfaces;
@@ -16,21 +18,26 @@ namespace WebBimba.Controllers
         private readonly IImageWorker _imageWorker;
         //Зберігає різну інформацію про MVC проект
         private readonly IWebHostEnvironment _environment;
+        private readonly IMapper _mapper;//Маппер для маппінгу об'єктів
         //DI - Depencecy Injection
         // Конструктор з впровадженням залежностей (DI)
         public MainController(AppBimbaDbContext context,
-            IWebHostEnvironment environment, IImageWorker imageWorker)
+            IWebHostEnvironment environment, IImageWorker imageWorker,
+            IMapper mapper)
         {
             _dbContext = context;  // Ініціалізуємо контекст бази даних
             _environment = environment; // Ініціалізуємо середовище
             _imageWorker = imageWorker; // Ініціалізуємо роботу з зображеннями
+            _mapper = mapper; // Ініціалізуємо маппер
         }
 
         // Метод (action) для відображення списку категорій
         public IActionResult Index()
         {
             // Отримуємо всі категорії з бази даних і передаємо в модель для відображення у View
-            var model = _dbContext.Categories.ToList();
+            List<CatagoryItemViewModel> model = _dbContext.Categories
+                .ProjectTo<CatagoryItemViewModel>(_mapper.ConfigurationProvider)
+                .ToList();
             return View(model);
         }
 
@@ -45,24 +52,24 @@ namespace WebBimba.Controllers
         [HttpPost] //це означає, що ми отримуємо дані із форми від клієнта
         public IActionResult Create(CategoryCreateViewModel model)
         {
-            var entity = new CategoryEntity(); // створюємо новий об'єкт категорії
+            var entity = _mapper.Map<CategoryEntity>(model); // створюємо новий об'єкт категорії
 
+            var dirName = "uploading";
+            var dirSave = Path.Combine(_environment.WebRootPath, dirName);
+            if (!Directory.Exists(dirSave))
+            {
+                Directory.CreateDirectory(dirSave);
+            }
             // Перевірка чи файл був вибраний
             if (model.Photo != null)
             {
                 entity.Image = _imageWorker.Save(model.Photo); // зберігаємо декілька розмірів фото
             }
 
-            // Заповнюємо об'єкт категорії даними з форми
-            entity.Name = model.Name;
-            entity.Description = model.Description;
-
             // Додаємо об'єкт в контекст бази даних
             _dbContext.Categories.Add(entity);
-
             // Зберігаємо зміни в базі даних
             _dbContext.SaveChanges();
-
             // Переходимо до списку всіх категорій
             return Redirect("/");
         }

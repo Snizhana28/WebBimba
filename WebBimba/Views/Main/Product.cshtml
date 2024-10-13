@@ -1,0 +1,84 @@
+﻿@model List<WebBimba.Data.Entities.ProductEntity>
+<h1 class="text-center">Список продуктів</h1>
+
+<div class="container">
+    <a asp-action="Create" class="btn btn-success mb-3">Додати новий продукт</a>
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <!-- Карусель для фото продукту -->
+                    <div id="carouselProduct@product.Id" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            @if (product.ProductImages != null && product.ProductImages.Any())
+                            {
+                                var isActive = true;
+                                foreach (var image in product.ProductImages)
+                                {
+                                    <div class="carousel-item @(isActive ? "active" : "")">
+                                        <img src="/uploading/@image.Image" class="d-block w-100" alt="Фото продукту">
+                                    </div>
+                                    isActive = false;
+                                }
+                            }
+                            else
+                            {
+                                <div class="carousel-item active">
+                                    <img src="/images/default-product.jpg" class="d-block w-100" alt="Немає фото">
+                                </div>
+                            }
+                        </div>
+                        <!-- Кнопки для перемикання зображень -->
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselProduct@product.Id" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Попереднє</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselProduct@product.Id" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Наступне</span>
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">Ціна: @product.Price грн</p>
+                        <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-primary">Редагувати</a>
+                        <a href="#" class="btn btn-danger" data-name="@product.Name" data-delete="@product.Id">Видалити</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Скрипт для видалення продуктів -->
+@section Scripts {
+    <script src="/lib/axios/axios.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            var modalDelete = new bootstrap.Modal(document.getElementById('modalDelete'));
+            var buttonsDelete = document.querySelectorAll('[data-delete]');
+            var productName = document.getElementById("productName");
+            var idDelete = 0;
+            buttonsDelete.forEach(btn => {
+                btn.addEventListener("click", function (event) {
+                    event.preventDefault();
+                    var id = this.getAttribute('data-delete');
+                    var name = this.getAttribute('data-name');
+                    idDelete = id;
+                    productName.innerHTML = name;
+                    modalDelete.show();
+                });
+            });
+
+            document.getElementById("deleteYes").addEventListener("click", () => {
+                axios.post("/Product/Delete/" + idDelete)
+                    .then(res => {
+                        modalDelete.hide();
+                        document.getElementById("ProductItem" + idDelete).remove();
+                    });
+            });
+        });
+    </script>
+}
