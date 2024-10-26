@@ -1,0 +1,24 @@
+﻿@model ProductEditViewModel
+
+<h1 class="text-center">Редагувати продукт</h1>
+
+<div class="container">
+    <div class="row">
+        <form method="post" class="col-md-6 offset-md-3" enctype="multipart/form-data">
+            <input type="hidden" class="form-control" asp-for="Id" />
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input type="text" class="form-control" asp-for="Name">
+            </div>
+            <div class="mb-3">
+                <label asp-for="Photos" class="form-label"></label>
+                <input type="file" class="form-control" asp-for="Photos" multiple />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Price" class="form-label"></label>
+                <textarea class="form-control" rows="3" asp-for="Price"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Редагувати</button>
+        </form>
+    </div>
+</div>

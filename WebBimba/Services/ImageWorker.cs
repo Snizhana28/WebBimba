@@ -76,28 +76,52 @@ namespace WebBimba.Services
             return imageName;
         }
 
-        public void Delete(string fileName) // метод для видалення файлу
+        public void Delete(string fileName)
         {
-            var fileSave = Path.Combine(_environment.WebRootPath, dirName, fileName); //повний шлях до файлу
-            if (File.Exists(fileSave)) // перевірка чи файл існує
-                File.Delete(fileSave); // видаляємо файл
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return; // Ігноруємо порожні назви файлів
+            }
+
+            // Складаємо шляхи до всіх зменшених версій
+            var filePaths = sizes.Select(size => Path.Combine(_environment.WebRootPath, dirName, $"{size}_{fileName}"))
+                               .ToList();
+
+            // Видаляємо всі файли одночасно для покращення продуктивності
+            Parallel.ForEach(filePaths, filePath =>
+            {
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        File.Delete(filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Логуємо або обробляємо помилки видалення окремих файлів
+                        Console.WriteLine($"Помилка видалення файлу '{filePath}': {ex.Message}");
+                    }
+                }
+            });
         }
-        public string Save(IFormFile file) // метод для збереження файлу
+
+        public string Save(IFormFile file)
         {
             try
             {
-                using (var memoryStream = new MemoryStream()) //створюємо потік пам'яті
+                using (var memoryStream = new MemoryStream())
                 {
-                    file.CopyTo(memoryStream); //копіюємо файл в потік пам'яті
-                    byte[] imageBytes = memoryStream.ToArray(); //читаємо дані з потоку пам'яті
-                    return CompresImage(imageBytes); //зберігаємо файл
+                    file.CopyTo(memoryStream);
+                    byte[] imageBytes = memoryStream.ToArray();
+                    return CompresImage(imageBytes);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}"); //логуємо помилку
-                return String.Empty; //повертаємо пустий рядок
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return String.Empty;
             }
         }
     }
 }
+
